@@ -4,6 +4,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.FirstSiteData;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.SecondSiteData;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.WebSiteData;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
@@ -15,15 +17,16 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class CrawlerService {
 
     public static List<Demand> processCrawling(String userId, ApartmentRepository apartmentRepository, DemandRepository demandRepository) {
 
         Set<String> visitedUrls = new HashSet<>();
         List<Apartment> apartmentsToAdd = new ArrayList<>();
-        //processing(new FirstSiteData(), apartmentRepository, visitedUrls, apartmentsToAdd);
-
+        processing(new FirstSiteData(), apartmentRepository, visitedUrls, apartmentsToAdd);
         processing(new SecondSiteData(), apartmentRepository, visitedUrls, apartmentsToAdd);
+
         List<Apartment> allApartments = apartmentRepository.findAll();
         List<Long> apartmentIds = allApartments.stream().filter(apartment -> !visitedUrls.contains(apartment.getUrl())).map(Apartment::getApartmentId).collect(Collectors.toList());
         List<Demand> allDemands = demandRepository.findAll();
@@ -31,7 +34,7 @@ public class CrawlerService {
             demand.getApartmentList().removeIf(apartment -> apartmentIds.stream().anyMatch(apartmentId -> apartment.getApartmentId().equals(apartmentId)));
             demandRepository.save(demand);
         });
-        apartmentsToAdd = apartmentsToAdd.stream().filter(apartment -> allApartments.stream().noneMatch(existingApartment -> similarityCheck(existingApartment, apartment)))
+        apartmentsToAdd = apartmentsToAdd.stream().filter(apartment -> allApartments.stream().noneMatch(existingApartment -> existingApartment.equals(apartment)))
                 .collect(Collectors.toList());
         List<Apartment> finalApartmentsToAdd = apartmentsToAdd;
         allDemands.forEach(demand -> {
@@ -63,7 +66,6 @@ public class CrawlerService {
                 if(apartment.isEmpty()) {
                     webSiteData.buildApartmentToAddObject(webSiteData.urlPrefix() + url, apartmentsToAdd);
                 }
-                break;
             }
 
         } catch (IOException e) {
@@ -72,11 +74,23 @@ public class CrawlerService {
     }
 
     public static Boolean checkIfSuitable(Demand demand, Apartment apartment) {
-        return false;
-    }
 
-    private static Boolean similarityCheck(Apartment existingApartment, Apartment newApartment) {
-       return false;
+        boolean parkingRequired = demand.getParkingPlaceRequired() != null ? demand.getParkingPlaceRequired() : false;
+        Integer priceMin = demand.getPriceMin() != null ? demand.getPriceMin() : 0;
+        Integer priceMax = demand.getPriceMax() != null ? demand.getPriceMax() : Integer.MAX_VALUE;
+        Double numberOfRoomsMin = demand.getNumberOfRoomsMin() != null ? demand.getNumberOfRoomsMin() : 0;
+        Double numberOfRoomsMax = demand.getNumberOfRoomsMax() != null ? demand.getNumberOfRoomsMax() : Integer.MAX_VALUE;
+        String heatType = demand.getHeatType() != null ? demand.getHeatType() : "-";
+        Integer floorMin = demand.getFloorMin() != null ? demand.getFloorMin() : 0;
+        Integer floorMax = demand.getFloorMax() != null ? demand.getFloorMax() : Integer.MAX_VALUE;
+        Integer areaMin = demand.getMinArea() != null ? demand.getMinArea() : 0;
+        Integer areaMax = demand.getMaxArea() != null ? demand.getMaxArea() : Integer.MAX_VALUE;
+
+        //calculate distance between apartment and lat and lng and compare with diameter
+
+        return(!parkingRequired || apartment.getParking()) && apartment.getPrice() >= priceMin && apartment.getPrice() <= priceMax
+            && apartment.getArea() >= areaMin && apartment.getArea() <= areaMax && apartment.getNumOfRooms() >= numberOfRoomsMin && apartment.getNumOfRooms() <= numberOfRoomsMax
+                && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatType.equals(apartment.getHeatingType()));
 
     }
 

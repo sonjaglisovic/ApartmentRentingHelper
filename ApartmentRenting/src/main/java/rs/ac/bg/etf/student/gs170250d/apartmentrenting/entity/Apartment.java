@@ -3,6 +3,7 @@ package rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Apartment {
@@ -122,5 +123,16 @@ public class Apartment {
 
     public void setParking(Boolean parking) {
         this.parking = parking;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Apartment)) return false;
+        Apartment apartment = (Apartment) o;
+        return Objects.equals(apartmentId, apartment.apartmentId) && Objects.equals(location, apartment.location)
+                && Objects.equals(url, apartment.url) && Objects.equals(price, apartment.price) && Objects.equals(numOfRooms, apartment.numOfRooms)
+                && Objects.equals(floor, apartment.floor) && Objects.equals(heatingType, apartment.heatingType) && Objects.equals(area, apartment.area)
+                && Objects.equals(image, apartment.image) && Objects.equals(parking, apartment.parking) && Objects.equals(demandList, apartment.demandList);
     }
 }

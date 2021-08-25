@@ -10,12 +10,14 @@ public class DemandRequest implements Serializable {
     private Double diameter;
     private Integer priceMin;
     private Integer priceMax;
-    private Integer numberOfRoomsMin;
-    private Integer numberOfRoomsMax;
+    private Double numberOfRoomsMin;
+    private Double numberOfRoomsMax;
     private String heatType;
     private Boolean parkingPlaceRequired;
-    private Double minArea;
-    private Double maxArea;
+    private Integer minArea;
+    private Integer maxArea;
+    private Integer floorMin;
+    private Integer floorMax;
     private String userEmail;
 
     public Long getDemandId() {
@@ -66,19 +68,19 @@ public class DemandRequest implements Serializable {
         this.priceMax = priceMax;
     }
 
-    public Integer getNumberOfRoomsMin() {
+    public Double getNumberOfRoomsMin() {
         return numberOfRoomsMin;
     }
 
-    public void setNumberOfRoomsMin(Integer numberOfRoomsMin) {
+    public void setNumberOfRoomsMin(Double numberOfRoomsMin) {
         this.numberOfRoomsMin = numberOfRoomsMin;
     }
 
-    public Integer getNumberOfRoomsMax() {
+    public Double getNumberOfRoomsMax() {
         return numberOfRoomsMax;
     }
 
-    public void setNumberOfRoomsMax(Integer numberOfRoomsMax) {
+    public void setNumberOfRoomsMax(Double numberOfRoomsMax) {
         this.numberOfRoomsMax = numberOfRoomsMax;
     }
 
@@ -98,19 +100,19 @@ public class DemandRequest implements Serializable {
         this.parkingPlaceRequired = parkingPlaceRequired;
     }
 
-    public Double getMinArea() {
+    public Integer getMinArea() {
         return minArea;
     }
 
-    public void setMinArea(Double minArea) {
+    public void setMinArea(Integer minArea) {
         this.minArea = minArea;
     }
 
-    public Double getMaxArea() {
+    public Integer getMaxArea() {
         return maxArea;
     }
 
-    public void setMaxArea(Double maxArea) {
+    public void setMaxArea(Integer maxArea) {
         this.maxArea = maxArea;
     }
 
@@ -120,5 +122,21 @@ public class DemandRequest implements Serializable {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public Integer getFloorMin() {
+        return floorMin;
+    }
+
+    public void setFloorMin(Integer floorMin) {
+        this.floorMin = floorMin;
+    }
+
+    public Integer getFloorMax() {
+        return floorMax;
+    }
+
+    public void setFloorMax(Integer floorMax) {
+        this.floorMax = floorMax;
     }
 }

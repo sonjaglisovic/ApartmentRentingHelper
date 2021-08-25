@@ -20,6 +20,8 @@ public class DemandService {
         demand.setParkingPlaceRequired(demandRequest.getParkingPlaceRequired());
         demand.setMinArea(demandRequest.getMinArea());
         demand.setMaxArea(demandRequest.getMaxArea());
+        demand.setFloorMin(demandRequest.getFloorMin());
+        demand.setFloorMax(demandRequest.getFloorMax());
     }
 
     public static Boolean oneRelatedDemand(Long apartmentId, ApartmentRepository apartmentRepository) {

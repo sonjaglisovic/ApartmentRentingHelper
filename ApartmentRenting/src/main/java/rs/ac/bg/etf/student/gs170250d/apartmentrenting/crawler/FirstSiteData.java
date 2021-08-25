@@ -59,8 +59,8 @@ public class FirstSiteData implements WebSiteData {
             String images = document.select("picture.advert-picture img").attr("src");
             Elements locationElements = document.select("div.property__location ul li");
             String city = locationElements.get(2).outerHtml().split("<li>")[1].split("</li>")[0];
-            String street = locationElements.get(4).outerHtml().split("<li>")[1].split("</li>")[0];
-            String address = city + ", " + street;
+            String street = locationElements.size() > 4 ? locationElements.get(4).outerHtml().split("<li>")[1].split("</li>")[0] : "";
+            String address = city + (street.equals("") ? "" : ", " + street);
 
             apartmentsToAdd.add(new Apartment(address, url, price, numOfRooms, floor, heatType.toLowerCase(Locale.ROOT), area, images, parking));
 
