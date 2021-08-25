@@ -27,6 +27,6 @@ public class DemandRepositoryTest {
 
     @Test
     void crawlerTest() {
-        CrawlerService.processCrawling("sonja", apartmentRepository);
+        CrawlerService.processCrawling("sonja", apartmentRepository, demandRepository);
     }
 }

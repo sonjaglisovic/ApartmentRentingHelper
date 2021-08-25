@@ -7,6 +7,7 @@ import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class FirstSiteData implements WebSiteData {
     @Override
@@ -40,11 +41,11 @@ public class FirstSiteData implements WebSiteData {
             }catch (NumberFormatException e) {
                 area = 0;
             }
-            Integer numOfRooms;
+            Double numOfRooms;
             try {
-                numOfRooms = Integer.parseInt(elements.get(1).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", ""));
+                numOfRooms = Double.parseDouble(elements.get(1).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", ""));
             }catch (NumberFormatException e) {
-                numOfRooms = 0;
+                numOfRooms = 0.0;
             }
             String heatType = elements.get(2).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", "");
             Boolean parking = elements.get(3).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", "").equals("Da");
@@ -58,10 +59,10 @@ public class FirstSiteData implements WebSiteData {
             String images = document.select("picture.advert-picture img").attr("src");
             Elements locationElements = document.select("div.property__location ul li");
             String city = locationElements.get(2).outerHtml().split("<li>")[1].split("</li>")[0];
-            String street = locationElements.get(4).outerHtml().split("<li>")[1].split("</li>")[0];;
+            String street = locationElements.get(4).outerHtml().split("<li>")[1].split("</li>")[0];
             String address = city + ", " + street;
 
-            apartmentsToAdd.add(new Apartment(address, url, price, numOfRooms, floor, heatType, area, images, parking));
+            apartmentsToAdd.add(new Apartment(address, url, price, numOfRooms, floor, heatType.toLowerCase(Locale.ROOT), area, images, parking));
 
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();

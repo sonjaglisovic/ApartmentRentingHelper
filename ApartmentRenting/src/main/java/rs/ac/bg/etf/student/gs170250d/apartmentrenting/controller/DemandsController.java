@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Demand;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.UserEntity;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.exception.DemandNotFoundException;
@@ -19,6 +20,7 @@ import rs.ac.bg.etf.student.gs170250d.apartmentrenting.service.DemandService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class DemandsController {
@@ -39,10 +41,12 @@ public class DemandsController {
         if(user.isEmpty()) {
             throw new UserNotFoundException("User doesn't exist", HttpStatus.NOT_FOUND);
         }
-
         Demand demand = new Demand(demandRequest, user.get());
+        List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
+        List<Apartment> allApartments = apartmentRepository.findAll();
+        demand.setApartmentList(allApartments.stream().filter(apartment -> CrawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList()));
+        demandList.add(demand);
         demandRepository.save(demand);
-        List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository);
         return ResponseEntity.ok(demandList);
     }
 
@@ -62,8 +66,12 @@ public class DemandsController {
         }
         Demand demand = optionalDemand.get();
         DemandService.updateDemand(demand, demandRequest);
+        List<Apartment> allApartments = apartmentRepository.findAll();
+        List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
+        demandList.removeIf(demandInList ->  demandInList.getDemandId().equals(demandId));
+        demand.setApartmentList(allApartments.stream().filter(apartment -> CrawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList()));
+        demandList.add(demand);
         demandRepository.save(demand);
-        List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository);
         return ResponseEntity.ok(demandList);
     }
 
@@ -74,7 +82,7 @@ public class DemandsController {
         if(optionalDemand.isEmpty()) {
             throw new DemandNotFoundException("Demand not found", HttpStatus.NOT_FOUND);
         }
-        //naci sve apartmane koji su vezani za taj demand i razvezati ih
+
         demandRepository.deleteById(demandId);
         return ResponseEntity.ok(HttpEntity.EMPTY);
     }
@@ -83,7 +91,7 @@ public class DemandsController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getDemandsForUser(@PathVariable String userId) {
 
-        return ResponseEntity.ok(CrawlerService.processCrawling(userId, apartmentRepository));
+        return ResponseEntity.ok(CrawlerService.processCrawling(userId, apartmentRepository, demandRepository));
     }
 
 }

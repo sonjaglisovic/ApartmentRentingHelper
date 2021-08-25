@@ -13,7 +13,7 @@ public class Apartment {
     private String location;
     private String url;
     private Integer price;
-    private Integer numOfRooms;
+    private Double numOfRooms;
     private Integer floor;
     private String heatingType;
     private Integer area;
@@ -22,9 +22,9 @@ public class Apartment {
     @ManyToMany(mappedBy = "apartmentList")
     List<Demand> demandList = new ArrayList<>();
 
-    Apartment() {}
+    public Apartment() {}
 
-    public Apartment(String location, String url, Integer price, Integer numOfRooms, Integer floor, String heatType, Integer area, String image, Boolean parking) {
+    public Apartment(String location, String url, Integer price, Double numOfRooms, Integer floor, String heatType, Integer area, String image, Boolean parking) {
         this.location = location;
         this.url = url;
         this.price = price;
@@ -68,11 +68,11 @@ public class Apartment {
         this.price = price;
     }
 
-    public Integer getNumOfRooms() {
+    public Double getNumOfRooms() {
         return numOfRooms;
     }
 
-    public void setNumOfRooms(Integer numOfRooms) {
+    public void setNumOfRooms(Double numOfRooms) {
         this.numOfRooms = numOfRooms;
     }
 
