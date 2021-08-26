@@ -1,11 +1,11 @@
-package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel;
+package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.geocoding;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class TopLeftPoint implements Serializable {
+public class BtmRightPoint implements Serializable {
 
     @SerializedName("lat")
     @Expose
@@ -13,7 +13,7 @@ public class TopLeftPoint implements Serializable {
     @SerializedName("lon")
     @Expose
     private Double lon;
-    private final static long serialVersionUID = -5590127447218032819L;
+    private final static long serialVersionUID = 9046668919299252013L;
 
     public Double getLat() {
         return lat;

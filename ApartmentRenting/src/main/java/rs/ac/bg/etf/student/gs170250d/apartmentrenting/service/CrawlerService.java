@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.FirstSiteData;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.SecondSiteData;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.WebSiteData;
@@ -12,6 +13,11 @@ import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Demand;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.repository.ApartmentRepository;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.repository.DemandRepository;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.geocoding.Position;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.geocoding.TomTomResponse;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.routing.Route;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.routing.RoutingResponse;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.routing.Summary;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,8 +40,8 @@ public class CrawlerService {
             demand.getApartmentList().removeIf(apartment -> apartmentIds.stream().anyMatch(apartmentId -> apartment.getApartmentId().equals(apartmentId)));
             demandRepository.save(demand);
         });
-        apartmentsToAdd = apartmentsToAdd.stream().filter(apartment -> allApartments.stream().noneMatch(existingApartment -> existingApartment.equals(apartment)))
-                .collect(Collectors.toList());
+//        apartmentsToAdd = apartmentsToAdd.stream().filter(apartment -> allApartments.stream().noneMatch(existingApartment -> existingApartment.equals(apartment)))
+//                .collect(Collectors.toList());
         List<Apartment> finalApartmentsToAdd = apartmentsToAdd;
         allDemands.forEach(demand -> {
             finalApartmentsToAdd.forEach(apartment -> {
@@ -87,11 +93,34 @@ public class CrawlerService {
         Integer areaMax = demand.getMaxArea() != null ? demand.getMaxArea() : Integer.MAX_VALUE;
 
         //calculate distance between apartment and lat and lng and compare with diameter
+        TomTomApiService tomTomApiService = new TomTomApiService();
+        String[] apartmentLocation = apartment.getLocation().split(",");
+        Position position = null;
+        if(apartmentLocation.length == 2) {
+            TomTomResponse tomTomResponse = tomTomApiService.getLocation("SRB", apartmentLocation[0], apartmentLocation[1]);
+            if(!CollectionUtils.isEmpty(tomTomResponse.getResults())) {
+                position = tomTomResponse.getResults().get(0).getPosition();
+            }
+        }
+
+        Position positionTo = new Position(demand.getLat(), demand.getLng());
 
         return(!parkingRequired || apartment.getParking()) && apartment.getPrice() >= priceMin && apartment.getPrice() <= priceMax
             && apartment.getArea() >= areaMin && apartment.getArea() <= areaMax && apartment.getNumOfRooms() >= numberOfRoomsMin && apartment.getNumOfRooms() <= numberOfRoomsMax
-                && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatType.equals(apartment.getHeatingType()));
+            && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatType.equals(apartment.getHeatingType())
+            && (position == null || calculateDistanceInKilometers(position, positionTo) < demand.getDiameter()));
 
+    }
+
+    public static Double calculateDistanceInKilometers(Position positionFrom, Position positionTo) {
+
+        TomTomApiService tomTomApiService = new TomTomApiService();
+        RoutingResponse routingResponse = tomTomApiService.getDistance(positionFrom, positionTo);
+        if(!CollectionUtils.isEmpty(routingResponse.getRoutes())) {
+            Integer lengthInMeters = routingResponse.getRoutes().stream().map(Route::getSummary).map(Summary::getLengthInMeters).sorted().findFirst().orElse(0);
+            return lengthInMeters * 1.0 / 1000;
+        }
+        return 0.0;
     }
 
 

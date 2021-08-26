@@ -1,17 +1,12 @@
-package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel;
-
+package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.geocoding;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-
 public class Address implements Serializable {
 
-    @SerializedName("streetNumber")
-    @Expose
-    private String streetNumber;
     @SerializedName("streetName")
     @Expose
     private String streetName;
@@ -24,18 +19,12 @@ public class Address implements Serializable {
     @SerializedName("countrySecondarySubdivision")
     @Expose
     private String countrySecondarySubdivision;
-    @SerializedName("countryTertiarySubdivision")
-    @Expose
-    private String countryTertiarySubdivision;
     @SerializedName("countrySubdivision")
     @Expose
     private String countrySubdivision;
     @SerializedName("postalCode")
     @Expose
     private String postalCode;
-    @SerializedName("extendedPostalCode")
-    @Expose
-    private String extendedPostalCode;
     @SerializedName("countryCode")
     @Expose
     private String countryCode;
@@ -48,21 +37,10 @@ public class Address implements Serializable {
     @SerializedName("freeformAddress")
     @Expose
     private String freeformAddress;
-    @SerializedName("countrySubdivisionName")
-    @Expose
-    private String countrySubdivisionName;
     @SerializedName("localName")
     @Expose
     private String localName;
-    private final static long serialVersionUID = -5860007386611884852L;
-
-    public String getStreetNumber() {
-        return streetNumber;
-    }
-
-    public void setStreetNumber(String streetNumber) {
-        this.streetNumber = streetNumber;
-    }
+    private final static long serialVersionUID = -3261542311036780977L;
 
     public String getStreetName() {
         return streetName;
@@ -96,14 +74,6 @@ public class Address implements Serializable {
         this.countrySecondarySubdivision = countrySecondarySubdivision;
     }
 
-    public String getCountryTertiarySubdivision() {
-        return countryTertiarySubdivision;
-    }
-
-    public void setCountryTertiarySubdivision(String countryTertiarySubdivision) {
-        this.countryTertiarySubdivision = countryTertiarySubdivision;
-    }
-
     public String getCountrySubdivision() {
         return countrySubdivision;
     }
@@ -118,14 +88,6 @@ public class Address implements Serializable {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    public String getExtendedPostalCode() {
-        return extendedPostalCode;
-    }
-
-    public void setExtendedPostalCode(String extendedPostalCode) {
-        this.extendedPostalCode = extendedPostalCode;
     }
 
     public String getCountryCode() {
@@ -158,14 +120,6 @@ public class Address implements Serializable {
 
     public void setFreeformAddress(String freeformAddress) {
         this.freeformAddress = freeformAddress;
-    }
-
-    public String getCountrySubdivisionName() {
-        return countrySubdivisionName;
-    }
-
-    public void setCountrySubdivisionName(String countrySubdivisionName) {
-        this.countrySubdivisionName = countrySubdivisionName;
     }
 
     public String getLocalName() {

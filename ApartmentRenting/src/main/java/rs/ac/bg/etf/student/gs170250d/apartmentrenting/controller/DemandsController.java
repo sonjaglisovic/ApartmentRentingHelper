@@ -68,9 +68,8 @@ public class DemandsController {
         DemandService.updateDemand(demand, demandRequest);
         List<Apartment> allApartments = apartmentRepository.findAll();
         List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
-        demandList.removeIf(demandInList ->  demandInList.getDemandId().equals(demandId));
         demand.setApartmentList(allApartments.stream().filter(apartment -> CrawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList()));
-        demandList.add(demand);
+        demandList.stream().filter(singleDemand -> singleDemand.getDemandId().equals(demandId)).forEach(singleDemand -> singleDemand = demand);
         demandRepository.save(demand);
         return ResponseEntity.ok(demandList);
     }

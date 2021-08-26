@@ -15,6 +15,7 @@ public class Apartment {
     private String url;
     private Integer price;
     private Double numOfRooms;
+
     private Integer floor;
     private String heatingType;
     private Integer area;

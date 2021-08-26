@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel;
+package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.geocoding;
 
 
 import com.google.gson.annotations.Expose;

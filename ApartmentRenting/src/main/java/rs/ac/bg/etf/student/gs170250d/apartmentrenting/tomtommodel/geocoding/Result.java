@@ -1,12 +1,11 @@
-package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel;
+package rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.geocoding;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class TomTomResponse implements Serializable {
+public class Result implements Serializable {
 
     @SerializedName("type")
     @Expose
@@ -23,22 +22,10 @@ public class TomTomResponse implements Serializable {
     @SerializedName("position")
     @Expose
     private Position position;
-    @SerializedName("mapcodes")
-    @Expose
-    private List<Mapcode> mapcodes = null;
     @SerializedName("viewport")
     @Expose
     private Viewport viewport;
-    @SerializedName("entryPoints")
-    @Expose
-    private List<EntryPoint> entryPoints = null;
-    @SerializedName("addressRanges")
-    @Expose
-    private AddressRanges addressRanges;
-    @SerializedName("dataSources")
-    @Expose
-    private DataSources dataSources;
-    private final static long serialVersionUID = 6347770107929317394L;
+    private final static long serialVersionUID = 1881232821371441720L;
 
     public String getType() {
         return type;
@@ -80,44 +67,12 @@ public class TomTomResponse implements Serializable {
         this.position = position;
     }
 
-    public List<Mapcode> getMapcodes() {
-        return mapcodes;
-    }
-
-    public void setMapcodes(List<Mapcode> mapcodes) {
-        this.mapcodes = mapcodes;
-    }
-
     public Viewport getViewport() {
         return viewport;
     }
 
     public void setViewport(Viewport viewport) {
         this.viewport = viewport;
-    }
-
-    public List<EntryPoint> getEntryPoints() {
-        return entryPoints;
-    }
-
-    public void setEntryPoints(List<EntryPoint> entryPoints) {
-        this.entryPoints = entryPoints;
-    }
-
-    public AddressRanges getAddressRanges() {
-        return addressRanges;
-    }
-
-    public void setAddressRanges(AddressRanges addressRanges) {
-        this.addressRanges = addressRanges;
-    }
-
-    public DataSources getDataSources() {
-        return dataSources;
-    }
-
-    public void setDataSources(DataSources dataSources) {
-        this.dataSources = dataSources;
     }
 
 }
