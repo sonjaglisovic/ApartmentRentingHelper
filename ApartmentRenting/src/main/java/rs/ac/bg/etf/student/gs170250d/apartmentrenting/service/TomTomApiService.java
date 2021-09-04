@@ -1,6 +1,7 @@
 package rs.ac.bg.etf.student.gs170250d.apartmentrenting.service;
 
 import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,27 +16,38 @@ import rs.ac.bg.etf.student.gs170250d.apartmentrenting.tomtommodel.routing.Routi
 @Service
 public class TomTomApiService {
 
-    RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    RestTemplate restTemplate;
 
     public final String MY_API_KEY = "B6hkAefPnSwcihAngy9SSffKppzyW5kw";
     public final String URL_GEOCODING = "https://api.tomtom.com/search/2/structuredGeocode.json";
     public final String URL_ROUTING = "https://api.tomtom.com/routing/1/calculateRoute/";
+
 
     public TomTomResponse getLocation(String countryCode, String city, String address) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL_GEOCODING)
+        UriComponentsBuilder builder = null;
+
+        builder = UriComponentsBuilder.fromHttpUrl(URL_GEOCODING)
                 .queryParam("countryCode", countryCode)
                 .queryParam("streetName", address)
                 .queryParam("municipality", city)
-                .queryParam("key", MY_API_KEY);
+                .queryParam("key", MY_API_KEY)
+                .encode();
 
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         HttpEntity<String> response = restTemplate.exchange(
-                builder.toUriString(),
+                builder.buildAndExpand().toUriString(),
                 HttpMethod.GET,
                 entity,
                 String.class);
@@ -54,6 +66,12 @@ public class TomTomApiService {
                 .queryParam("key", MY_API_KEY);
 
         HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         HttpEntity<String> response = restTemplate.exchange(
                 builder.toUriString(),

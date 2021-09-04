@@ -1,45 +1,72 @@
 package rs.ac.bg.etf.student.gs170250d.apartmentrenting.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
+import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.UserEntity;
+
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DemandRequest implements Serializable {
+public class DemandResponse implements Serializable {
 
+    @SerializedName("demandId")
+    @Expose
     private Long demandId;
-    private Double lat;
-    private Double lng;
-    private Double diameter;
-    private Integer priceMin;
-    private Integer priceMax;
-    private Double numberOfRoomsMin;
-    private Double numberOfRoomsMax;
-    private String heatType;
-    private Boolean parkingPlaceRequired;
-    private Integer minArea;
-    private Integer maxArea;
-    private Integer floorMin;
-    private Integer floorMax;
-    private String userEmail;
+    @SerializedName("demandName")
+    @Expose
     private String demandName;
+    @SerializedName("lat")
+    @Expose
+    private Double lat;
+    @SerializedName("lng")
+    @Expose
+    private Double lng;
+    @SerializedName("diameter")
+    @Expose
+    private Double diameter;
+    @SerializedName("priceMin")
+    @Expose
+    private Integer priceMin;
+    @SerializedName("priceMax")
+    @Expose
+    private Integer priceMax;
+    @SerializedName("numberOfRoomsMin")
+    @Expose
+    private Double numberOfRoomsMin;
+    @SerializedName("numberOfRoomsMax")
+    @Expose
+    private Double numberOfRoomsMax;
+    @SerializedName("heatType")
+    @Expose
+    private String heatType;
+    @SerializedName("parkingPlaceRequired")
+    @Expose
+    private Boolean parkingPlaceRequired;
+    @SerializedName("minArea")
+    @Expose
+    private Integer minArea;
+    @SerializedName("maxArea")
+    @Expose
+    private Integer maxArea;
+    @SerializedName("floorMin")
+    @Expose
+    private Integer floorMin;
+    @SerializedName("floorMax")
+    @Expose
+    private Integer floorMax;
+    @SerializedName("user")
+    @Expose
+    private UserEntity user;
+    @SerializedName("apartmentList")
+    @Expose
+    private List<Apartment> apartmentList = new ArrayList<>();
 
-    public DemandRequest() {}
-
-    public DemandRequest(String demandName, Double lat, Double lng, Double diameter, Integer priceMin, Integer priceMax, Double numberOfRoomsMin, Double numberOfRoomsMax, String heatType, Boolean parkingPlaceRequired, Integer minArea, Integer maxArea, Integer floorMin, Integer floorMax, String userEmail) {
-        this.lat = lat;
-        this.lng = lng;
-        this.diameter = diameter;
-        this.priceMin = priceMin;
-        this.priceMax = priceMax;
-        this.numberOfRoomsMin = numberOfRoomsMin;
-        this.numberOfRoomsMax = numberOfRoomsMax;
-        this.heatType = heatType;
-        this.parkingPlaceRequired = parkingPlaceRequired;
-        this.minArea = minArea;
-        this.maxArea = maxArea;
-        this.floorMin = floorMin;
-        this.floorMax = floorMax;
-        this.userEmail = userEmail;
-        this.demandName = demandName;
-    }
 
     public Long getDemandId() {
         return demandId;
@@ -137,12 +164,20 @@ public class DemandRequest implements Serializable {
         this.maxArea = maxArea;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public List<Apartment> getApartmentList() {
+        return apartmentList;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setApartmentList(List<Apartment> apartmentList) {
+        this.apartmentList = apartmentList;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public Integer getFloorMin() {

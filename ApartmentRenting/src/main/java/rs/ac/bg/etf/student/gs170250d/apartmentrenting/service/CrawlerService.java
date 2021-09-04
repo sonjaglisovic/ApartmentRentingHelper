@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler.FirstSiteData;
@@ -26,7 +27,10 @@ import java.util.stream.Collectors;
 @Service
 public class CrawlerService {
 
-    public static List<Demand> processCrawling(String userId, ApartmentRepository apartmentRepository, DemandRepository demandRepository) {
+    @Autowired
+    TomTomApiService tomTomApiService;
+
+    public List<Demand> processCrawling(String userId, ApartmentRepository apartmentRepository, DemandRepository demandRepository) {
 
         Set<String> visitedUrls = new HashSet<>();
         List<Apartment> apartmentsToAdd = new ArrayList<>();
@@ -40,26 +44,25 @@ public class CrawlerService {
             demand.getApartmentList().removeIf(apartment -> apartmentIds.stream().anyMatch(apartmentId -> apartment.getApartmentId().equals(apartmentId)));
             demandRepository.save(demand);
         });
-//        apartmentsToAdd = apartmentsToAdd.stream().filter(apartment -> allApartments.stream().noneMatch(existingApartment -> existingApartment.equals(apartment)))
-//                .collect(Collectors.toList());
+
         List<Apartment> finalApartmentsToAdd = apartmentsToAdd;
+        for (Apartment apartment : apartmentsToAdd) {
+            apartmentRepository.save(apartment);
+        }
         allDemands.forEach(demand -> {
             finalApartmentsToAdd.forEach(apartment -> {
                 if(checkIfSuitable(demand, apartment)) {
-                    apartment.getDemandList().add(demand);
                     demand.getApartmentList().add(apartment);
                 }
             });
             demandRepository.save(demand);
         });
-        for (Apartment apartment : apartmentsToAdd) {
-            apartmentRepository.save(apartment);
-        }
+
         apartmentRepository.deleteAllById(apartmentIds);
         return allDemands.stream().filter(demand -> demand.getUser().getEmail().equals(userId)).collect(Collectors.toList());
     }
 
-    private static void processing(WebSiteData webSiteData, ApartmentRepository apartmentRepository, Set<String> visitedUrls,
+    private void processing(WebSiteData webSiteData, ApartmentRepository apartmentRepository, Set<String> visitedUrls,
                                    List<Apartment> apartmentsToAdd) {
         try {
             Document document = Jsoup.connect(webSiteData.getUrl()).get();
@@ -79,7 +82,7 @@ public class CrawlerService {
         }
     }
 
-    public static Boolean checkIfSuitable(Demand demand, Apartment apartment) {
+    public Boolean checkIfSuitable(Demand demand, Apartment apartment) {
 
         boolean parkingRequired = demand.getParkingPlaceRequired() != null ? demand.getParkingPlaceRequired() : false;
         Integer priceMin = demand.getPriceMin() != null ? demand.getPriceMin() : 0;
@@ -92,12 +95,10 @@ public class CrawlerService {
         Integer areaMin = demand.getMinArea() != null ? demand.getMinArea() : 0;
         Integer areaMax = demand.getMaxArea() != null ? demand.getMaxArea() : Integer.MAX_VALUE;
 
-        //calculate distance between apartment and lat and lng and compare with diameter
-        TomTomApiService tomTomApiService = new TomTomApiService();
         String[] apartmentLocation = apartment.getLocation().split(",");
         Position position = null;
         if(apartmentLocation.length == 2) {
-            TomTomResponse tomTomResponse = tomTomApiService.getLocation("SRB", apartmentLocation[0], apartmentLocation[1]);
+            TomTomResponse tomTomResponse = tomTomApiService.getLocation("RS", apartmentLocation[0], apartmentLocation[1]);
             if(!CollectionUtils.isEmpty(tomTomResponse.getResults())) {
                 position = tomTomResponse.getResults().get(0).getPosition();
             }
@@ -105,16 +106,21 @@ public class CrawlerService {
 
         Position positionTo = new Position(demand.getLat(), demand.getLng());
 
-        return(!parkingRequired || apartment.getParking()) && apartment.getPrice() >= priceMin && apartment.getPrice() <= priceMax
+        String[] requiredHeatTypes = heatType.replaceAll(" ", "").split(",");
+        String[] actualHeatTypes = apartment.getHeatingType().replaceAll(" ", "").split(",");
+
+        Boolean heatTypeMatch = Arrays.stream(requiredHeatTypes).anyMatch(heatingType -> Arrays.stream(actualHeatTypes).anyMatch(actualHeatingType -> actualHeatingType.equals(heatingType)))
+                || apartment.getHeatingType().equals("-");
+
+        return (!parkingRequired || apartment.getParking()) && apartment.getPrice() >= priceMin && apartment.getPrice() <= priceMax
             && apartment.getArea() >= areaMin && apartment.getArea() <= areaMax && apartment.getNumOfRooms() >= numberOfRoomsMin && apartment.getNumOfRooms() <= numberOfRoomsMax
-            && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatType.equals(apartment.getHeatingType())
-            && (position == null || calculateDistanceInKilometers(position, positionTo) < demand.getDiameter()));
+            && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatTypeMatch)
+            && (position == null || calculateDistanceInKilometers(position, positionTo) < demand.getDiameter());
 
     }
 
-    public static Double calculateDistanceInKilometers(Position positionFrom, Position positionTo) {
+    public Double calculateDistanceInKilometers(Position positionFrom, Position positionTo) {
 
-        TomTomApiService tomTomApiService = new TomTomApiService();
         RoutingResponse routingResponse = tomTomApiService.getDistance(positionFrom, positionTo);
         if(!CollectionUtils.isEmpty(routingResponse.getRoutes())) {
             Integer lengthInMeters = routingResponse.getRoutes().stream().map(Route::getSummary).map(Summary::getLengthInMeters).sorted().findFirst().orElse(0);

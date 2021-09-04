@@ -6,6 +6,7 @@ import org.jsoup.select.Elements;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,7 +63,7 @@ public class FirstSiteData implements WebSiteData {
             String street = locationElements.size() > 4 ? locationElements.get(4).outerHtml().split("<li>")[1].split("</li>")[0] : "";
             String address = city + (street.equals("") ? "" : ", " + street);
 
-            apartmentsToAdd.add(new Apartment(address, url, price, numOfRooms, floor, heatType.toLowerCase(Locale.ROOT), area, images, parking));
+            apartmentsToAdd.add(new Apartment(address, url, price, numOfRooms, floor, heatType.toLowerCase(Locale.ROOT), area, images, parking, new ArrayList<>()));
 
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();

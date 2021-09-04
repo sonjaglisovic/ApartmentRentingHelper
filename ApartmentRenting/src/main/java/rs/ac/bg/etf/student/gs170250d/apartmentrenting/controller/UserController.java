@@ -5,7 +5,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,10 +32,9 @@ public class UserController {
 
         Optional<UserEntity> fetchedUser = userRepository.findById(user.getEmail());
         if(fetchedUser.isEmpty()) {
-            throw new WrongUserNameOrPasswordException("User name is not correct", HttpStatus.IM_USED);
+            throw new WrongUserNameOrPasswordException("User name is not correct", HttpStatus.NOT_FOUND);
         }
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(!encoder.encode(user.getPassword()).equals(fetchedUser.get().getPassword())) {
+        if(!user.getPassword().equals(fetchedUser.get().getPassword())) {
             throw new WrongUserNameOrPasswordException("User name or password is not correct", HttpStatus.NOT_FOUND);
         }
 
@@ -53,20 +51,16 @@ public class UserController {
         if(!pattern.matcher(user.getEmail()).matches()) {
             throw new IncorrectEmailFormatException("Incorrect email format", HttpStatus.BAD_REQUEST);
         }
-        String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W_]).{3,}$";
+        String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W_]).{8,}$";
         pattern = Pattern.compile(passwordRegex);
         if(!pattern.matcher(user.getPassword()).matches()) {
             throw new IncorrectPasswordFormatException("Incorrect password format exception", HttpStatus.BAD_REQUEST);
         }
-
         if(userRepository.findById(user.getEmail()).isPresent()) {
             throw new AlreadyExistsUserWithEmail("Already exists user with this email", HttpStatus.BAD_REQUEST);
         }
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword()));
         UserEntity userEntity = new UserEntity(user);
         userRepository.save(userEntity);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(HttpEntity.EMPTY);
     }
 }

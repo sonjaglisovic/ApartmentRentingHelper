@@ -26,7 +26,7 @@ public class Apartment {
 
     public Apartment() {}
 
-    public Apartment(String location, String url, Integer price, Double numOfRooms, Integer floor, String heatType, Integer area, String image, Boolean parking) {
+    public Apartment(String location, String url, Integer price, Double numOfRooms, Integer floor, String heatType, Integer area, String image, Boolean parking, List<Demand> demandList) {
         this.location = location;
         this.url = url;
         this.price = price;
@@ -36,6 +36,7 @@ public class Apartment {
         this.area = area;
         this.image = image;
         this.parking = parking;
+        this.demandList = demandList;
     }
 
     public Long getApartmentId() {

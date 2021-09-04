@@ -12,6 +12,7 @@ public class Demand {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long demandId;
+    private String demandName;
     private Double lat;
     private Double lng;
     private Double diameter;
@@ -25,10 +26,10 @@ public class Demand {
     private Integer maxArea;
     private Integer floorMin;
     private Integer floorMax;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userEmail")
     private UserEntity user;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "suitable",
         joinColumns = @JoinColumn(name = "demandId"),
@@ -53,6 +54,7 @@ public class Demand {
         this.user = user;
         this.floorMin = demandRequest.getFloorMin();
         this.floorMax = demandRequest.getFloorMax();
+        this.demandName = demandRequest.getDemandName();
     }
 
     public Long getDemandId() {
@@ -181,5 +183,13 @@ public class Demand {
 
     public void setFloorMax(Integer floorMax) {
         this.floorMax = floorMax;
+    }
+
+    public String getDemandName() {
+        return demandName;
+    }
+
+    public void setDemandName(String demandName) {
+        this.demandName = demandName;
     }
 }

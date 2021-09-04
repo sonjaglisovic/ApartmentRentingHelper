@@ -1,13 +1,13 @@
 package rs.ac.bg.etf.student.gs170250d.apartmentrenting.service;
 
-import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
+import org.springframework.stereotype.Service;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Demand;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.model.DemandRequest;
-import rs.ac.bg.etf.student.gs170250d.apartmentrenting.repository.ApartmentRepository;
 
+@Service
 public class DemandService {
 
-    public static void updateDemand(Demand demand, DemandRequest demandRequest) {
+    public void updateDemand(Demand demand, DemandRequest demandRequest) {
 
         demand.setLat(demandRequest.getLat());
         demand.setLng(demandRequest.getLng());
@@ -22,11 +22,6 @@ public class DemandService {
         demand.setMaxArea(demandRequest.getMaxArea());
         demand.setFloorMin(demandRequest.getFloorMin());
         demand.setFloorMax(demandRequest.getFloorMax());
-    }
-
-    public static Boolean oneRelatedDemand(Long apartmentId, ApartmentRepository apartmentRepository) {
-
-        Apartment apartment = apartmentRepository.getById(apartmentId);
-        return Integer.valueOf(1).equals(apartment.getDemandList().size());
+        demand.setDemandName(demandRequest.getDemandName());
     }
 }

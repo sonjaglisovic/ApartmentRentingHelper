@@ -31,6 +31,10 @@ public class DemandsController {
     private UserRepository userRepository;
     @Autowired
     private ApartmentRepository apartmentRepository;
+    @Autowired
+    private CrawlerService crawlerService;
+    @Autowired
+    private DemandService demandService;
 
     @PostMapping(path = "/demand",
             produces = MediaType.APPLICATION_JSON_VALUE,
@@ -42,11 +46,14 @@ public class DemandsController {
             throw new UserNotFoundException("User doesn't exist", HttpStatus.NOT_FOUND);
         }
         Demand demand = new Demand(demandRequest, user.get());
-        List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
+        List<Demand> demandList = crawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
         List<Apartment> allApartments = apartmentRepository.findAll();
-        demand.setApartmentList(allApartments.stream().filter(apartment -> CrawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList()));
+        List<Apartment> suitableForDemand = allApartments.stream().filter(apartment -> crawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList());
+        demand.setApartmentList(suitableForDemand);
         demandList.add(demand);
         demandRepository.save(demand);
+        demandList.forEach(singleDemand -> singleDemand.setUser(null));
+        demandList.forEach(singleDemand -> singleDemand.getApartmentList().forEach(apartment -> apartment.setDemandList(null)));
         return ResponseEntity.ok(demandList);
     }
 
@@ -65,12 +72,16 @@ public class DemandsController {
             throw new UserNotFoundException("Specified user doesn't exist", HttpStatus.NOT_FOUND);
         }
         Demand demand = optionalDemand.get();
-        DemandService.updateDemand(demand, demandRequest);
+        demandService.updateDemand(demand, demandRequest);
         List<Apartment> allApartments = apartmentRepository.findAll();
-        List<Demand> demandList = CrawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
-        demand.setApartmentList(allApartments.stream().filter(apartment -> CrawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList()));
+        List<Demand> demandList = crawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
+        List<Apartment> suitableForDemand = allApartments.stream().filter(apartment -> crawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList());
+        demand.setApartmentList(suitableForDemand);
         demandList.stream().filter(singleDemand -> singleDemand.getDemandId().equals(demandId)).forEach(singleDemand -> singleDemand = demand);
+        demand.setUser(updatedUser.get());
         demandRepository.save(demand);
+        demandList.forEach(singleDemand -> singleDemand.setUser(null));
+        demandList.forEach(singleDemand -> singleDemand.getApartmentList().forEach(apartment -> apartment.setDemandList(null)));
         return ResponseEntity.ok(demandList);
     }
 
@@ -90,7 +101,10 @@ public class DemandsController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getDemandsForUser(@PathVariable String userId) {
 
-        return ResponseEntity.ok(CrawlerService.processCrawling(userId, apartmentRepository, demandRepository));
+        List<Demand> demandList = crawlerService.processCrawling(userId, apartmentRepository, demandRepository);
+        demandList.forEach(singleDemand -> singleDemand.setUser(null));
+        demandList.forEach(singleDemand -> singleDemand.getApartmentList().forEach(apartment -> apartment.setDemandList(null)));
+        return ResponseEntity.ok(demandList);
     }
 
 }

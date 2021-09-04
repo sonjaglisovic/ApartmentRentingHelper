@@ -12,7 +12,7 @@ public class UserEntity {
     @Id
     private String email;
     private String password;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     List<Demand> demands = new ArrayList<>();
 
     public UserEntity() {}

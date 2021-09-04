@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SecondSiteData implements WebSiteData {
@@ -65,7 +66,7 @@ public class SecondSiteData implements WebSiteData {
             String street = document.select("div.address").outerHtml().split(">")[1].split("<")[0]
                     .replaceAll("\n", "");
 
-            apartmentsToAdd.add(new Apartment("Beograd, " + street, url, price, numOfRooms, floor, heatingType, area, image, parking));
+            apartmentsToAdd.add(new Apartment("Beograd, " + street, url, price, numOfRooms, floor, heatingType, area, image, parking, new ArrayList<>()));
         } catch (IOException e) {
             e.printStackTrace();
         }
