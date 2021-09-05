@@ -36,10 +36,11 @@ public class DemandsController {
     @Autowired
     private DemandService demandService;
 
+    @CrossOrigin
     @PostMapping(path = "/demand",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity addDemand(@RequestParam DemandRequest demandRequest) {
+    public ResponseEntity addDemand(@RequestBody DemandRequest demandRequest) {
 
         Optional<UserEntity> user = userRepository.findById(demandRequest.getUserEmail());
         if(user.isEmpty()) {
@@ -57,10 +58,11 @@ public class DemandsController {
         return ResponseEntity.ok(demandList);
     }
 
+    @CrossOrigin
     @PutMapping(path = "/demand/{demandId}",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateDemand(@RequestParam DemandRequest demandRequest,
+    public ResponseEntity updateDemand(@RequestBody DemandRequest demandRequest,
                                        @PathVariable Long demandId) {
 
         Optional<Demand> optionalDemand = demandRepository.findById(demandId);
@@ -85,6 +87,7 @@ public class DemandsController {
         return ResponseEntity.ok(demandList);
     }
 
+    @CrossOrigin
     @DeleteMapping(path = "/demand/{demandId}")
     public ResponseEntity deleteDemand(@PathVariable("demandId") Long demandId) {
 
@@ -97,6 +100,7 @@ public class DemandsController {
         return ResponseEntity.ok(HttpEntity.EMPTY);
     }
 
+    @CrossOrigin
     @GetMapping(path = "/demands-by/user/{userId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getDemandsForUser(@PathVariable String userId) {

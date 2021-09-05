@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +80,7 @@ public class UserControllerTest {
     @Test
     public void tryToLoginWithWrongEmail() {
         UserRequest userRequest = new UserRequest("sonja@gmail.com", "sonja1234@");
+        userController.login(userRequest);
         Assertions.assertThrows(WrongUserNameOrPasswordException.class, () -> userController.login(userRequest));
     }
 

@@ -1,0 +1,90 @@
+img{
+height:70vh;
+}
+
+h1{
+font-size: 62px;
+padding: 2px 5px 3px 5px;
+}
+
+.mainLetterColor {
+  background: -webkit-linear-gradient(#2C5364, #203A43);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align : center;
+}
+
+.myImage{
+margin-top:10%;
+}
+
+input, button {
+  border: none;
+  outline: none;
+  background: none;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+}
+
+.form-position {
+margin-top:15px;
+margin-bottom:15px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding-bottom: 5px;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+.button {
+  width: 100%;
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color:#8d40fb;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #5a57fb;}
+
+.button:active {
+  background-color: #5a57fb;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+label {
+  display: block;
+  width: $inputW;
+  margin: 25px auto 0;
+  text-align: center;
+
+  span {
+    font-size: 12px;
+    color: #cfcfcf;
+    text-transform: uppercase;
+  }
+}
+
+.errorBorder {
+border: 2px solid red;
+}
+
+.errorMessage {
+color : red;
+font-weight : bold;
+text-align:center;
+}
+
+.requiredMessage{
+color : red;
+text-align:left;
+}
