@@ -2,7 +2,7 @@ img{
 height:70vh;
 }
 
-h1{
+.h1login{
 font-size: 62px;
 padding: 2px 5px 3px 5px;
 }
@@ -30,7 +30,7 @@ margin-top:15px;
 margin-bottom:15px;
 }
 
-input {
+input[type=email], input[type=password], input[type=text] {
   display: block;
   width: 100%;
   margin-top: 5px;
@@ -47,16 +47,16 @@ input {
   cursor: pointer;
   outline: none;
   color: #fff;
-  background-color:#8d40fb;
+  background-color:#d6a64d;
   border: none;
   border-radius: 5px;
   box-shadow: 0 9px #999;
 }
 
-.button:hover {background-color: #5a57fb;}
+.button:hover {background-color: #b58630;}
 
 .button:active {
-  background-color: #5a57fb;
+  background-color: #b58630;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
@@ -75,7 +75,7 @@ label {
 }
 
 .errorBorder {
-border: 2px solid red;
+border: 2px solid red !important;
 }
 
 .errorMessage {

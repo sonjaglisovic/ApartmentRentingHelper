@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './LoginComponent.css'
 import { useState, useEffect } from 'react'
 import Slideshow from '../Slideshow.js'
+import ShowPassword from './ShowPassword.js'
 import { useHistory } from 'react-router-dom'
 
 function LoginComponent({login, register, message, setMessage, successMessage, setSuccessMessage}) {
@@ -14,6 +15,7 @@ const [reTypePasswordMissing, setReTypePasswordMissing] = useState("")
 const [passwordMissing, setPasswordMissing] = useState("")
 const [emailMissing, setEmailMissing] = useState("")
 const history = useHistory()
+const [showPasswordChecked, setShowPasswordChecked] = useState(false)
 
 const toggleSgnIn = () => {
     setEmail("");
@@ -23,6 +25,7 @@ const toggleSgnIn = () => {
     setPasswordMissing("");
     setEmailMissing("");
     setMessage("");
+    setShowPasswordChecked(false);
     setSignIn(signIn ? false : true)
 }
 
@@ -71,12 +74,12 @@ const signInOrUp = (event) => {
     <div className = "row">
     {signIn === true ?
         <div className="col-md-12">
-            <h1 className="mt-2 mainLetterColor">Welcome back</h1>
+            <h1 className="mt-2 h1login mainLetterColor">Welcome back</h1>
             <p className="mt-2 mainLetterColor">If you already have an account, just sign in. We've missed you!</p>
         </div>
         :
          <div className="col-md-12">
-            <h1 className="mt-2 mainLetterColor">Welcome to Renting Buddy</h1>
+            <h1 className="mt-2 h1login mainLetterColor">Welcome to Renting Buddy</h1>
             <p className="mt-2 mainLetterColor">Create account to find perfect apartment for you!</p>
         </div>
       }
@@ -100,15 +103,16 @@ const signInOrUp = (event) => {
             <label>
               <span>Password</span>
               {passwordMissing === "" ?
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /> :
+              <input type={showPasswordChecked === false ? "password" : "text"} value={password} onChange={(e) => setPassword(e.target.value)} /> :
               <>
-              <input type="password" className="errorBorder" required="required" onChange={(e) => setPassword(e.target.value)} />
+              <input type={showPasswordChecked === false ? "password" : "text"} className="errorBorder" required="required" onChange={(e) => setPassword(e.target.value)} />
                <p className = "requiredMessage"> Password is required! </p>
                </>}
             </label>
             {signIn === true ?
             <>
-            <button type="submit" className="button mt-5">Sign In</button>
+            <ShowPassword showPassword={showPasswordChecked} setShowPassword={setShowPasswordChecked}/>
+            <button type="submit" className="button mt-3">Sign In</button>
             <div className="col-md-4">
                 <p className="mt-4">New here?</p>
             </div>
@@ -117,12 +121,13 @@ const signInOrUp = (event) => {
             <label>
               <span>Re-type password</span>
               {reTypePasswordMissing === "" ?
-              <input type="password" value={repeatedPassword} onChange={(e) => setRepeatedPassword(e.target.value)} /> : <>
-              <input type="password" className="errorBorder" onChange={(e) => setRepeatedPassword(e.target.value)} />
+              <input type={showPasswordChecked === false ? "password" : "text"} value={repeatedPassword} onChange={(e) => setRepeatedPassword(e.target.value)} /> : <>
+              <input type={showPasswordChecked === false ? "password" : "text"} className="errorBorder" onChange={(e) => setRepeatedPassword(e.target.value)} />
                <p className = "requiredMessage">  Re-type password field is required! </p>
               </>}
             </label>
-             <button type="submit" className="button mt-5">Sign Up</button>
+            <ShowPassword showPassword={showPasswordChecked} setShowPassword={setShowPasswordChecked} />
+             <button type="submit" className="button mt-3">Sign Up</button>
              <button type="button" className="button mt-5" onClick={toggleSgnIn}>Back to login page</button>
             </>}
             </form>

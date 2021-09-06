@@ -1,0 +1,27 @@
+h1{
+font-size: 100px;
+padding: 2px 5px 3px 5px;
+font-weight:bold;
+font-style: italic;
+color:#800020;
+}
+
+
+.mainbutton{
+  width: 30%;
+  font-size: 42px;
+  text-align: center;
+  font-style:italic;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color:#800020;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 9px #999;
+}
+
+.mainbutton:active {
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
