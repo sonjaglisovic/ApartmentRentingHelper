@@ -25,3 +25,61 @@ color:#800020;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
+
+.form-group.required .control-label:after {
+  content:"*";
+  color:red;
+}
+
+.input_fields {
+
+  display: block;
+  width: 100%;
+  margin-left:5px;
+  margin-top: 5px;
+  padding-bottom: 5px;
+  font-size: 16px;
+  border: 1px solid rgba(0,0,0,0.4);
+  text-align: center;
+  border-radius:5px;
+  background-color:white;
+}
+
+select {
+
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+  background-color:white;
+
+  z-index: 1;
+
+  &::-ms-expand {
+    display: none;
+  }
+
+  outline: none;
+}
+
+.modal-close {
+background-color:#800020;
+
+}
+
+label {
+text-align:center;
+}
+
+::placeholder {
+color:grey;
+}
+.modal-color{
+background-color:#D3D3D3
+}

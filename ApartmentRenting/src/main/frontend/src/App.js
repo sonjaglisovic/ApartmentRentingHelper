@@ -12,6 +12,7 @@ function App() {
 
 const [message, setMessage] = useState("")
 const [successMessage, setSuccessMessage] = useState("")
+const[loginUser, setLoginUser] = useState("")
 
 const login = async (email, password, history) => {
 
@@ -24,7 +25,14 @@ const login = async (email, password, history) => {
     })
 
     const data = await res.json();
-    res.status !== 200 ? setMessage(data.errorMessage) : history.push('/main-page');
+
+    if (res.status !== 200) {
+        setMessage(data.errorMessage)
+    } else {
+        setLoginUser(email);
+        localStorage.setItem("loginUser", JSON.stringify(email));
+        history.push('/main-page');
+    }
 
 }
 
@@ -56,7 +64,7 @@ const register = async (email, password, repeatedPassword) => {
           )
         } />
         <Route path = "/main-page" exact render={(props) => (
-            <MainPage />
+            <MainPage loginUser={loginUser} setLoginUser={setLoginUser} />
           )
         } />
         </Router>

@@ -44,7 +44,7 @@ public class DemandsController {
 
         Optional<UserEntity> user = userRepository.findById(demandRequest.getUserEmail());
         if(user.isEmpty()) {
-            throw new UserNotFoundException("User doesn't exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new UserNotFoundException("User doesn't exist", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         Demand demand = new Demand(demandRequest, user.get());
         List<Demand> demandList = crawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
@@ -67,11 +67,11 @@ public class DemandsController {
 
         Optional<Demand> optionalDemand = demandRepository.findById(demandId);
         if(optionalDemand.isEmpty()) {
-            throw new DemandNotFoundException("Demand not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new DemandNotFoundException("Demand not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         Optional<UserEntity> updatedUser = userRepository.findById(demandRequest.getUserEmail());
         if(updatedUser.isEmpty()) {
-            throw new UserNotFoundException("Specified user doesn't exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new UserNotFoundException("Specified user doesn't exist", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         Demand demand = optionalDemand.get();
         demandService.updateDemand(demand, demandRequest);
@@ -93,7 +93,7 @@ public class DemandsController {
 
         Optional<Demand> optionalDemand = demandRepository.findById(demandId);
         if(optionalDemand.isEmpty()) {
-            throw new DemandNotFoundException("Demand not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new DemandNotFoundException("Demand not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
 
         demandRepository.deleteById(demandId);
