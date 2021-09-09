@@ -36,6 +36,26 @@ const login = async (email, password, history) => {
 
 }
 
+const addDemand = async (demandRequest) => {
+
+console.log(demandRequest);
+
+    const res = await fetch('http://localhost:8080/demand', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(demandRequest),
+    })
+
+    const data = await res.json();
+
+    if (res.status !== 200) {
+        console.log(data.errorMessage)
+    }
+}
+
+
 const register = async (email, password, repeatedPassword) => {
 
    const registerData = {
@@ -64,7 +84,7 @@ const register = async (email, password, repeatedPassword) => {
           )
         } />
         <Route path = "/main-page" exact render={(props) => (
-            <MainPage loginUser={loginUser} setLoginUser={setLoginUser} />
+            <MainPage loginUser={loginUser} setLoginUser={setLoginUser} addDemand={addDemand} />
           )
         } />
         </Router>

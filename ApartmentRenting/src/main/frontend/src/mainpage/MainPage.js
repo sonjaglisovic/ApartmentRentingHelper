@@ -4,8 +4,10 @@ import './MainPage.css'
 import Navbar from '../navbar/Navbar'
 import { useState, useEffect, useRef } from 'react'
 import tt from '@tomtom-international/web-sdk-maps'
+import MapContainer from '../GoogleMap'
+import $ from 'jquery';
 
-const MainPage = ({loginUser, setLoginUser}) => {
+const MainPage = ({loginUser, setLoginUser, addDemand}) => {
 
 const [priceMin, setPriceMin] = useState(null)
 const [priceMax, setPriceMax] = useState(null)
@@ -19,25 +21,15 @@ const [maxArea, setMaxArea] = useState(null)
 const mapElement = useRef()
 const [floorMin, setFloorMin] = useState(null)
 const [floorMax, setFloorMax] = useState(null)
-const [lat, setLat] = useState(null)
-const [lon, setLon] = useState(null)
 const [diameter, setDiameter] = useState(null)
 const [updateDemand, setUpdateDemand] = useState(true)
-const [mapLatitude, setMapLatitude] = useState(44.787197)
-const [mapLongitude, setMapLongitude] = useState(20.457273)
+const [position, setPosition] = useState({lat:44.787197, lng:20.457273} )
 const [mapZoom, setMapZoom] = useState(13)
 const [map, setMap] = useState({})
 
+
  useEffect(() => {
     setLoginUser(JSON.parse(localStorage.getItem("loginUser")));
-
-    var map = tt.map({
-        key: "B6hkAefPnSwcihAngy9SSffKppzyW5kw",
-        container: mapElement.current,
-        center: [mapLongitude, mapLatitude],
-        zoom: mapZoom
-      });
-      setMap(map);
 
   }, [])
 
@@ -50,18 +42,30 @@ const [map, setMap] = useState({})
         }
       }
       setHeatType(value);
-      console.log(heatType);
   }
 
-const getUserCoordinates = (e) => {
-    var position = e.latLng;
-    console.log(position);
-}
+const processDemand = (event) => {
+    event.preventDefault();
+    setPriceMin(priceMin === "" ? null : parseInt(priceMin, 10));
+    setPriceMax(priceMax === "" ? null : parseInt(priceMax, 10));
+    setNumberOfRoomsMin(numberOfRoomsMin === "" ? null : parseFloat(numberOfRoomsMin));
+    setNumberOfRoomsMax(numberOfRoomsMax === "" ? null : parseFloat(numberOfRoomsMax));
+    if(heatType != null) {
+    var heatTypes = ""
+        heatType.map((heatingType) => {heatTypes = heatTypes + (heatTypes === "" ?  "" : ",") + heatingType})
+    }
+    setMinArea(minArea === "" ? null : parseInt(minArea, 10));
+    setMaxArea(maxArea === "" ? null : parseInt(maxArea, 10));
+    setFloorMin(floorMin === "" ? null : parseInt(floorMin, 10));
+    setFloorMax(floorMax === "" ? null : parseInt(floorMax, 10));
+    const demand = {id:null, lat:position.lat, lng:position.lng, diameter:parseFloat(diameter), priceMin:priceMin, priceMax:priceMax,
+        numberOfRoomsMin:numberOfRoomsMin, numberOfRoomsMax:numberOfRoomsMax, heatType:heatTypes, parkingPlaceRequired:parkingPlaceRequired,
+        minArea:minArea, maxArea:maxArea, floorMin:floorMin, floorMax:floorMax, userEmail:loginUser, demandName:demandName}
+    addDemand(demand);
+    $("#addApartmentModal .close").click();
 
-const updateMap = () => {
-  map.setCenter([parseFloat(mapLongitude), parseFloat(mapLatitude)]);
-  map.setZoom(mapZoom);
-};
+
+}
 
   return (
 
@@ -86,11 +90,12 @@ const updateMap = () => {
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
+             <form onSubmit={processDemand}>
             <div class="modal-body">
-            <form>
+
                 <table>
                     <tr>
-                    <div ref={mapElement} className="mapDiv" onClick={getUserCoordinates}></div>
+                        <MapContainer position={position} setPosition={setPosition} />
                     </tr>
                     <div class="form-group required">
                     <tr className="ml-5">
@@ -103,10 +108,10 @@ const updateMap = () => {
                         </tr>
                         <tr>
                         <td>
-                        <label class="control-label">Demand Name: </label>
+                        <label class="control-label">Filter Name: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required step=".01" onChange={(e) => setDemandName(e.target.value)} />
+                            <input className="input_fields" type="text" required step=".01" onChange={(e) => setDemandName(e.target.value)} />
                         </td>
                         </tr>
                         <tr>
@@ -114,7 +119,7 @@ const updateMap = () => {
                              <label>Minimal price: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setPriceMin(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setPriceMin(e.target.value)} />
                         </td>
                     </tr>
                     <tr>
@@ -122,7 +127,7 @@ const updateMap = () => {
                              <label>Maximal price: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setPriceMax(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setPriceMax(e.target.value)} />
                         </td>
                     </tr>
                     <tr>
@@ -130,7 +135,7 @@ const updateMap = () => {
                              <label>Minimal number of rooms: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setNumberOfRoomsMin(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setNumberOfRoomsMin(e.target.value)} />
                         </td>
                     </tr>
                      <tr>
@@ -138,7 +143,7 @@ const updateMap = () => {
                              <label>Maximal number of rooms: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setNumberOfRoomsMax(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setNumberOfRoomsMax(e.target.value)} />
                         </td>
                     </tr>
                      <tr>
@@ -169,7 +174,7 @@ const updateMap = () => {
                              <label>Minimal area: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setMinArea(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setMinArea(e.target.value)} />
                         </td>
                     </tr>
                     <tr>
@@ -177,7 +182,7 @@ const updateMap = () => {
                              <label>Maximal area: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setMaxArea(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setMaxArea(e.target.value)} />
                         </td>
                     </tr>
                     <tr>
@@ -185,7 +190,7 @@ const updateMap = () => {
                              <label>Minimal floor: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setFloorMin(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setFloorMin(e.target.value)} />
                         </td>
                     </tr>
                     <tr>
@@ -193,19 +198,20 @@ const updateMap = () => {
                              <label>Maximal floor: </label>
                         </td>
                         <td>
-                            <input className="input_fields" type="number" required onChange={(e) => setFloorMax(e.target.value)} />
+                            <input className="input_fields" type="number" onChange={(e) => setFloorMax(e.target.value)} />
                         </td>
                     </tr>
 
                     </div>
                 </table>
-                </form>
+
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn text-light modal-close">Save filters</button>
+                <button type="submit" class="btn text-light modal-close">Save filters</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
             </div>
+            </form>
           </div>
         </div>
       </div>
