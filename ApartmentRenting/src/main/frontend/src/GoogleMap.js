@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react'
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, Circle } from '@react-google-maps/api';
 
-const MapContainer = ({position, setPosition}) => {
+const MapContainer = ({position, setPosition, diameter}) => {
 
   const mapStyles = {
     height: "40vh",
@@ -10,6 +10,19 @@ const MapContainer = ({position, setPosition}) => {
     left:"9%",
     top: "9%"
  };
+
+const options = {
+        fillColor: "#ff6961",
+        strokeColor: "#ff6961",
+        strokeOpacity: 0.8,
+        strokeWeight: 0.1,
+        fillOpacity: 0.35,
+        clickable: false,
+        draggable: false,
+        editable: false,
+        visible: true,
+        zIndex: 1
+}
 
 const clickMap = (e) => {
     setPosition({lat:e.latLng.lat(), lng:e.latLng.lng()})
@@ -22,7 +35,12 @@ const clickMap = (e) => {
           mapContainerStyle={mapStyles}
           zoom={13}
           center={position}
-        > <Marker position={position}/> </GoogleMap>
+        > <Marker position={position}/>
+         <Circle center={position}
+          radius={diameter*1000}
+          options={options}
+           />
+         </GoogleMap>
      </LoadScript>
   )
 }

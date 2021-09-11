@@ -46,33 +46,40 @@ public class CrawlerService {
         });
 
         List<Apartment> finalApartmentsToAdd = apartmentsToAdd;
+        apartmentsToAdd.removeIf(apartment -> apartmentRepository.findApartmentByUrl(apartment.getUrl()).isPresent());
         for (Apartment apartment : apartmentsToAdd) {
-            apartmentRepository.save(apartment);
+            if (apartmentRepository.findApartmentByUrl(apartment.getUrl()).isEmpty()) {
+                apartmentRepository.save(apartment);
+            }
         }
         allDemands.forEach(demand -> {
             finalApartmentsToAdd.forEach(apartment -> {
-                if(checkIfSuitable(demand, apartment)) {
+                if (demand.getApartmentList().stream().noneMatch(apartmentToCheck -> apartmentToCheck.getUrl().equals(apartment.getUrl())) && checkIfSuitable(demand, apartment)) {
                     demand.getApartmentList().add(apartment);
                 }
             });
             demandRepository.save(demand);
         });
 
-        apartmentRepository.deleteAllById(apartmentIds);
+        apartmentIds.forEach(id -> {
+            if (apartmentRepository.findById(id).isPresent()) {
+                apartmentRepository.deleteById(id);
+            }
+        });
         return allDemands.stream().filter(demand -> demand.getUser().getEmail().equals(userId)).collect(Collectors.toList());
     }
 
     private void processing(WebSiteData webSiteData, ApartmentRepository apartmentRepository, Set<String> visitedUrls,
-                                   List<Apartment> apartmentsToAdd) {
+                            List<Apartment> apartmentsToAdd) {
         try {
             Document document = Jsoup.connect(webSiteData.getUrl()).get();
 
             Elements elements = document.select(webSiteData.selectString());
-            for(Element element : elements) {
+            for (Element element : elements) {
                 String url = element.select("a").attr("href");
                 visitedUrls.add(webSiteData.urlPrefix() + url);
                 Optional<Apartment> apartment = apartmentRepository.findApartmentByUrl(webSiteData.urlPrefix() + url);
-                if(apartment.isEmpty()) {
+                if (apartment.isEmpty()) {
                     webSiteData.buildApartmentToAddObject(webSiteData.urlPrefix() + url, apartmentsToAdd);
                 }
             }
@@ -97,9 +104,9 @@ public class CrawlerService {
 
         String[] apartmentLocation = apartment.getLocation().split(",");
         Position position = null;
-        if(apartmentLocation.length == 2) {
+        if (apartmentLocation.length == 2) {
             TomTomResponse tomTomResponse = tomTomApiService.getLocation("RS", apartmentLocation[0], apartmentLocation[1]);
-            if(!CollectionUtils.isEmpty(tomTomResponse.getResults())) {
+            if (!CollectionUtils.isEmpty(tomTomResponse.getResults())) {
                 position = tomTomResponse.getResults().get(0).getPosition();
             }
         }
@@ -113,16 +120,16 @@ public class CrawlerService {
                 || apartment.getHeatingType().equals("-");
 
         return (!parkingRequired || apartment.getParking()) && apartment.getPrice() >= priceMin && apartment.getPrice() <= priceMax
-            && apartment.getArea() >= areaMin && apartment.getArea() <= areaMax && apartment.getNumOfRooms() >= numberOfRoomsMin && apartment.getNumOfRooms() <= numberOfRoomsMax
-            && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatTypeMatch)
-            && (position == null || calculateDistanceInKilometers(position, positionTo) < demand.getDiameter());
+                && apartment.getArea() >= areaMin && apartment.getArea() <= areaMax && apartment.getNumOfRooms() >= numberOfRoomsMin && apartment.getNumOfRooms() <= numberOfRoomsMax
+                && apartment.getFloor() >= floorMin && apartment.getFloor() <= floorMax && (heatType.equals("-") || heatTypeMatch)
+                && (position == null || calculateDistanceInKilometers(position, positionTo) < demand.getDiameter());
 
     }
 
     public Double calculateDistanceInKilometers(Position positionFrom, Position positionTo) {
 
         RoutingResponse routingResponse = tomTomApiService.getDistance(positionFrom, positionTo);
-        if(!CollectionUtils.isEmpty(routingResponse.getRoutes())) {
+        if (!CollectionUtils.isEmpty(routingResponse.getRoutes())) {
             Integer lengthInMeters = routingResponse.getRoutes().stream().map(Route::getSummary).map(Summary::getLengthInMeters).sorted().findFirst().orElse(0);
             return lengthInMeters * 1.0 / 1000;
         }

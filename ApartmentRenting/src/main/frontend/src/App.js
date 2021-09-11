@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import LoginComponent from './login/LoginComponent.js'
 import MainPage from './mainpage/MainPage.js'
+import Footer from './Footer'
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
 const [message, setMessage] = useState("")
 const [successMessage, setSuccessMessage] = useState("")
 const[loginUser, setLoginUser] = useState("")
+const [demands, setDemands] = useState([]);
 
 const login = async (email, password, history) => {
 
@@ -52,7 +54,43 @@ console.log(demandRequest);
 
     if (res.status !== 200) {
         console.log(data.errorMessage)
+    } else {
+        setDemands(data);
     }
+}
+
+const deleteDemand = async (demandId) => {
+     const res = await fetch(`http://localhost:8080/demand/${demandId}`, {
+          method: 'DELETE',
+        })
+}
+
+const getDemands = async(loginUser) => {
+    const res = await fetch(`http://localhost:8080/demands-by/user/${loginUser}`)
+    const data = await res.json()
+
+    return data;
+}
+
+const updateDemand = async(updateDemandRequest) => {
+
+    const res = await fetch(`http://localhost:8080/demand/${updateDemandRequest.demandId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(updateDemandRequest),
+    })
+
+    const data = await res.json();
+
+    if (res.status !== 200) {
+        console.log(data.errorMessage)
+    } else {
+        setDemands(data);
+    }
+
+
 }
 
 
@@ -78,16 +116,20 @@ const register = async (email, password, repeatedPassword) => {
 
   return (
 
+        <>
         <Router>
         <Route path = "/" exact render={(props) => (
             <LoginComponent login={login} register={register} message={message} setMessage={setMessage} successMessage={successMessage} setSuccessMessage={setSuccessMessage}/>
           )
         } />
         <Route path = "/main-page" exact render={(props) => (
-            <MainPage loginUser={loginUser} setLoginUser={setLoginUser} addDemand={addDemand} />
+            <MainPage loginUser={loginUser} setLoginUser={setLoginUser} addDemand={addDemand} getDemands={getDemands} deleteDemand={deleteDemand}
+            editDemand={updateDemand} demands={demands} setDemands={setDemands} />
           )
         } />
         </Router>
+        <Footer />
+        </>
   );
 }
 

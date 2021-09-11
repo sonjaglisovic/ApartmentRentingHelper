@@ -1,0 +1,32 @@
+.filterh {
+    font-size:50px;
+    font-style:italic;
+}
+
+.filter{
+  background: #f4f4f4;
+  margin: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-left: 10px solid #800020;
+}
+
+.dataAlign {
+text-align:left
+}
+
+.icon-size {
+    font-size:30px;
+    text-align:right;
+}
+
+.loading {
+    text-align:center;
+    font-size:30px;
+    color:grey;
+}
+
+.modal-close {
+background-color:#800020;
+
+}
