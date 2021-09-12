@@ -109,6 +109,8 @@ public class CrawlerService {
             if (!CollectionUtils.isEmpty(tomTomResponse.getResults())) {
                 position = tomTomResponse.getResults().get(0).getPosition();
             }
+        } else if(apartmentLocation.length == 1 && !apartmentLocation[0].equals("Beograd")) {
+            return false;
         }
 
         Position positionTo = new Position(demand.getLat(), demand.getLng());

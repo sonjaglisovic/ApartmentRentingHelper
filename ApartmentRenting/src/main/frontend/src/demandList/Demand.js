@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { useState, useEffect, useRef } from 'react'
 import './DemandList.css'
-import { FiMinimize2, FiMaximize2, FiEdit3 } from "react-icons/fi";
-import { AiOutlineDelete } from "react-icons/ai";
+import { FiMinimize2, FiMaximize2, FiEdit3, FiTrash2 } from "react-icons/fi";
 import $ from 'jquery'
+import ApartmentList from '../apartmentList/ApartmentList'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
 
 const Demand = ({demand, showDetails, index, setShowDetails, deleteDemand, onEdit}) => {
 
@@ -63,7 +65,7 @@ return(
         </div>
     </div>
     <div className="col-md-2 d-flex flex-row-reverse">
-        <AiOutlineDelete className="icon-size"
+        <FiTrash2 className="icon-size"
             data-toggle="modal" data-target={modalId}
           />
            <FiEdit3 className="icon-size"
@@ -72,7 +74,12 @@ return(
            {showDetails[index] === false ? <FiMaximize2 onClick={toggleExpand} className="icon-size" /> : <FiMinimize2 onClick={toggleExpand} className="icon-size" />}
     </div>
     </div>
-
+    {showDetails[index] === true && <Container>
+    <Row className="mt-3">
+        <ApartmentList apartmentList={demand.apartmentList} />
+     </Row>
+    </Container>
+    }
      <div class="modal fade" id={demand.demandId} tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
             <div class="modal-dialog bg-dark" role="document">
               <div class="modal-content bg-light">

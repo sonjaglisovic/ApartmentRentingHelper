@@ -54,6 +54,13 @@ public class SecondSiteData implements WebSiteData {
                     }catch (NumberFormatException e) {
                         floor = 0;
                     }
+                    if(floor == 0) {
+                        try {
+                            floor = Integer.parseInt(element.select("div.value").outerHtml().split(">")[1].replaceAll("\n", "").split("\\.")[0].replaceAll(" ", ""));
+                        }catch (NumberFormatException e) {
+                            floor = 0;
+                        }
+                    }
                 } else if(element.attr("label").equals("Površina") && !element.select("div.value").outerHtml().equals("")) {
                     area = Integer.parseInt(element.select("div.value").outerHtml().split(">")[1].split("m")[0].replaceAll(" ", "")
                             .replaceAll("\n", ""));

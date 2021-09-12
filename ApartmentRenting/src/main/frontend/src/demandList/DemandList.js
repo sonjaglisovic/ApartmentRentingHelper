@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { useState, useEffect, useRef } from 'react'
 import './DemandList.css'
 import Demand from './Demand'
+import {Image, Col, Row} from 'react-bootstrap'
 
 const DemandList = ({getDemands, loginUser, deleteDemand, demands, setDemands, loading, setLoading, onEdit}) => {
 

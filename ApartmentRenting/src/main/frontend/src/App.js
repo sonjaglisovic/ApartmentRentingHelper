@@ -33,6 +33,7 @@ const login = async (email, password, history) => {
     } else {
         setLoginUser(email);
         localStorage.setItem("loginUser", JSON.stringify(email));
+        setDemands([]);
         history.push('/main-page');
     }
 

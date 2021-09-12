@@ -2,6 +2,7 @@ package rs.ac.bg.etf.student.gs170250d.apartmentrenting.crawler;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.entity.Apartment;
 
@@ -20,6 +21,25 @@ public class FirstSiteData implements WebSiteData {
     public String getUrl() {
 
         return "https://www.nekretnine.rs/stambeni-objekti/stanovi/izdavanje-prodaja/izdavanje/lista/po-stranici/50?gclid=CjwKCAjw9uKIBhA8EiwAYPUS3P2YTkKjJvNyjnIj1eh9vyGeIMFbyYoxDjEEZ1AB91OmaGtB5hqFHBoCov0QAvD_BwE";
+    }
+
+    private Double getNumberOfRoomsBasedOnDescription(String description) {
+
+        if(description.contains("Jednosoban")) {
+            return 1.0;
+        } else if(description.contains("Dvosoban")) {
+            return 2.0;
+        } else if(description.contains("Trosoban")) {
+            return 3.0;
+        } else if(description.contains("Četvorosoban")) {
+            return 4.0;
+        } else if(description.contains("Petosoban")) {
+            return 5.0;
+        } else if(description.contains("Šestosoban")) {
+            return 6.0;
+        }
+
+        return 0.0;
     }
 
     @Override
@@ -47,6 +67,14 @@ public class FirstSiteData implements WebSiteData {
                 numOfRooms = Double.parseDouble(elements.get(1).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", ""));
             }catch (NumberFormatException e) {
                 numOfRooms = 0.0;
+            }
+            if(numOfRooms == 0.0) {
+                Elements apartmentDetails = document.select("div.property__amenities ul li");
+                for(Element apartmentData: apartmentDetails) {
+                    if(apartmentData.outerHtml().contains("Kategorija")) {
+                        numOfRooms = getNumberOfRoomsBasedOnDescription(apartmentData.outerHtml());
+                    }
+                }
             }
             String heatType = elements.get(2).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", "");
             Boolean parking = elements.get(3).select("span").outerHtml().split("<br>")[1].split("<")[0].replaceAll(" ", "").equals("Da");

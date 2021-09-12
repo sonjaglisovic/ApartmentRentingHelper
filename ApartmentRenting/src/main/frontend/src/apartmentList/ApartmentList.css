@@ -1,0 +1,20 @@
+.imm {
+    flex: 1;
+    height:180px;
+    width:85%;
+    margin-left:0%;
+    margin-right:10%;
+    resizeMode: 'contain';
+}
+
+.moreInfo {
+ width:90%;
+ margin-top:5%;
+ margin-bottom:5%;
+ background-color:#800020;
+}
+
+.every-first {
+   background:#C0C0C0;
+    width:97%;
+}
