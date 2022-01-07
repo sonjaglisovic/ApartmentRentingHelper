@@ -17,8 +17,8 @@ public class SecondSiteData implements WebSiteData {
     }
 
     @Override
-    public String getUrl() {
-       return "https://www.4zida.rs/izdavanje-stanova/beograd";
+    public String getUrl(int page) {
+       return "https://www.4zida.rs/izdavanje-stanova/beograd" + (page == 1 ? "" : "?strana=" + page);
     }
 
     @Override
@@ -30,6 +30,9 @@ public class SecondSiteData implements WebSiteData {
     public void buildApartmentToAddObject(String url, List<Apartment> apartmentsToAdd) {
 
         try {
+
+            Thread.sleep(500);
+
             Document document = Jsoup.connect(url).get();
             Elements elements = document.select("section app-info-item");
             Integer price = Integer.parseInt(document.select("div.prices strong").outerHtml().split(">")[1].split("&")[0]
@@ -50,7 +53,7 @@ public class SecondSiteData implements WebSiteData {
                     }
                 } else if(element.attr("label").equals("Spratnost") && !element.select("div.value").outerHtml().equals("")) {
                     try {
-                        floor = Integer.parseInt(element.select("div.value").outerHtml().split(">")[1].split("/")[0].replaceAll(" ", ""));
+                        floor = Integer.parseInt(element.select("div.value").outerHtml().split(">")[1].replaceAll("\n", "").split("/")[0].replaceAll(" ", ""));
                     }catch (NumberFormatException e) {
                         floor = 0;
                     }
@@ -75,6 +78,8 @@ public class SecondSiteData implements WebSiteData {
 
             apartmentsToAdd.add(new Apartment("Beograd, " + street, url, price, numOfRooms, floor, heatingType, area, image, parking, new ArrayList<>()));
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

@@ -29,8 +29,12 @@ public class CrawlerService {
 
     @Autowired
     TomTomApiService tomTomApiService;
+    @Autowired
+    DemandRepository demandRepository;
+    @Autowired
+    ApartmentRepository apartmentRepository;
 
-    public List<Demand> processCrawling(String userId, ApartmentRepository apartmentRepository, DemandRepository demandRepository) {
+    public void processCrawling() {
 
         Set<String> visitedUrls = new HashSet<>();
         List<Apartment> apartmentsToAdd = new ArrayList<>();
@@ -47,17 +51,22 @@ public class CrawlerService {
 
         List<Apartment> finalApartmentsToAdd = apartmentsToAdd;
         apartmentsToAdd.removeIf(apartment -> apartmentRepository.findApartmentByUrl(apartment.getUrl()).isPresent());
+        List<Apartment> removeFromAddList = new ArrayList<>();
         for (Apartment apartment : apartmentsToAdd) {
             if (apartmentRepository.findApartmentByUrl(apartment.getUrl()).isEmpty()) {
                 apartmentRepository.save(apartment);
+            } else {
+                removeFromAddList.add(apartment);
             }
         }
+        finalApartmentsToAdd.removeAll(removeFromAddList);
         allDemands.forEach(demand -> {
             finalApartmentsToAdd.forEach(apartment -> {
                 if (demand.getApartmentList().stream().noneMatch(apartmentToCheck -> apartmentToCheck.getUrl().equals(apartment.getUrl())) && checkIfSuitable(demand, apartment)) {
                     demand.getApartmentList().add(apartment);
                 }
             });
+            demand.getApartmentList().removeIf(apartment1 -> apartmentIds.stream().anyMatch(apartmentId -> apartmentId.equals(apartment1.getApartmentId())));
             demandRepository.save(demand);
         });
 
@@ -66,26 +75,41 @@ public class CrawlerService {
                 apartmentRepository.deleteById(id);
             }
         });
-        return allDemands.stream().filter(demand -> demand.getUser().getEmail().equals(userId)).collect(Collectors.toList());
     }
 
     private void processing(WebSiteData webSiteData, ApartmentRepository apartmentRepository, Set<String> visitedUrls,
                             List<Apartment> apartmentsToAdd) {
-        try {
-            Document document = Jsoup.connect(webSiteData.getUrl()).get();
 
-            Elements elements = document.select(webSiteData.selectString());
-            for (Element element : elements) {
-                String url = element.select("a").attr("href");
-                visitedUrls.add(webSiteData.urlPrefix() + url);
-                Optional<Apartment> apartment = apartmentRepository.findApartmentByUrl(webSiteData.urlPrefix() + url);
-                if (apartment.isEmpty()) {
-                    webSiteData.buildApartmentToAddObject(webSiteData.urlPrefix() + url, apartmentsToAdd);
+        int numOfPages = 0;
+        Set<String> previousPageUrls = new HashSet<>();
+        Set<String> currentPageUrls = new HashSet<>();
+        while (true) {
+            try {
+                numOfPages++;
+                Document document = Jsoup.connect(webSiteData.getUrl(numOfPages)).get();
+                Elements elements = document.select(webSiteData.selectString());
+
+                int previousPageUrlSetSize = previousPageUrls.size();
+                previousPageUrls.addAll(currentPageUrls);
+
+                if (elements.size() == 0 || (currentPageUrls.size() != 0 && previousPageUrlSetSize == previousPageUrls.size())) {
+                    break;
                 }
-            }
+                previousPageUrls = new HashSet<>(currentPageUrls);
+                currentPageUrls = new HashSet<>();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                for (Element element : elements) {
+                    String url = element.select("a").attr("href");
+                    visitedUrls.add(webSiteData.urlPrefix() + url);
+                    currentPageUrls.add(webSiteData.urlPrefix() + url);
+                    Optional<Apartment> apartment = apartmentRepository.findApartmentByUrl(webSiteData.urlPrefix() + url);
+                    if (apartment.isEmpty()) {
+                        webSiteData.buildApartmentToAddObject(webSiteData.urlPrefix() + url, apartmentsToAdd);
+                    }
+                }
+            } catch (Exception e) {
+                numOfPages++;
+            }
         }
     }
 
@@ -118,7 +142,7 @@ public class CrawlerService {
         String[] requiredHeatTypes = heatType.replaceAll(" ", "").split(",");
         String[] actualHeatTypes = apartment.getHeatingType().replaceAll(" ", "").split(",");
 
-        Boolean heatTypeMatch = Arrays.stream(requiredHeatTypes).anyMatch(heatingType -> Arrays.stream(actualHeatTypes).anyMatch(actualHeatingType -> actualHeatingType.equals(heatingType)))
+        boolean heatTypeMatch = Arrays.stream(requiredHeatTypes).anyMatch(heatingType -> Arrays.asList(actualHeatTypes).contains(heatingType))
                 || apartment.getHeatingType().equals("-");
 
         return (!parkingRequired || apartment.getParking()) && apartment.getPrice() >= priceMin && apartment.getPrice() <= priceMax
@@ -137,6 +161,4 @@ public class CrawlerService {
         }
         return 0.0;
     }
-
-
 }

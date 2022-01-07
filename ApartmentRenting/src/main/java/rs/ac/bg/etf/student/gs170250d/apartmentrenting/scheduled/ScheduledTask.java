@@ -7,19 +7,15 @@ import rs.ac.bg.etf.student.gs170250d.apartmentrenting.repository.ApartmentRepos
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.repository.DemandRepository;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.service.CrawlerService;
 
-//@Component
-//public class ScheduledTask {
-//
-//    @Autowired
-//    private CrawlerService crawlerService;
-//    @Autowired
-//    private ApartmentRepository apartmentRepository;
-//    @Autowired
-//    private DemandRepository demandRepository;
-//
-//    @Scheduled( initialDelay = 5000, fixedDelay = 3600 * 1000)
-//    public void writeCurrentTime() {
-//
-//        crawlerService.processCrawling(null, apartmentRepository, demandRepository);
-//    }
-//}
+@Component
+public class ScheduledTask {
+
+    @Autowired
+    private CrawlerService crawlerService;
+
+    @Scheduled(initialDelay = 5000, fixedDelay = 3600 * 1000)
+    public void writeCurrentTime() {
+
+        crawlerService.processCrawling();
+    }
+}

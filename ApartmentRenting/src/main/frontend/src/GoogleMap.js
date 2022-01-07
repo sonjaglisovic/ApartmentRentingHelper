@@ -4,7 +4,9 @@ import { GoogleMap, LoadScript, Marker, Circle } from '@react-google-maps/api';
 
 const MapContainer = ({position, setPosition, diameter}) => {
 
-  const mapStyles = {
+const API_KEY = 'AIzaSyDCjUdKEcmM7E1CopQLP4q0l8SasbRTFPM';
+
+ const mapStyles = {
     height: "40vh",
     width: "100%",
     left:"9%",
@@ -24,22 +26,21 @@ const options = {
         zIndex: 1
 }
 
-const clickMap = (e) => {
-    setPosition({lat:e.latLng.lat(), lng:e.latLng.lng()})
-}
+ const changeCoordinates = (e) => {
+        setPosition({lat:e.latLng.lat(), lng:e.latLng.lng()})
+ }
 
   return (
      <LoadScript className="ml-2"
-       googleMapsApiKey='AIzaSyDCjUdKEcmM7E1CopQLP4q0l8SasbRTFPM'>
-        <GoogleMap onClick={clickMap}
+       googleMapsApiKey={API_KEY}>
+        <GoogleMap onClick={changeCoordinates}
           mapContainerStyle={mapStyles}
           zoom={13}
-          center={position}
-        > <Marker position={position}/>
+          center={position}>
+         <Marker position={position}/>
          <Circle center={position}
           radius={diameter*1000}
-          options={options}
-           />
+          options={options} />
          </GoogleMap>
      </LoadScript>
   )

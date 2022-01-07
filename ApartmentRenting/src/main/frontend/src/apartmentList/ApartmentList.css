@@ -18,3 +18,37 @@
    background:#C0C0C0;
     width:97%;
 }
+.pagination{
+  margin-top:10%;
+  margin: 1rem auto;
+  display: inline-block;
+  display: flex;
+  justify-content: space-evenly;
+  width: 32%;
+}
+.active{
+  background-color: #C0C0C0;
+  border: solid 2px;
+  border-radius:5px;
+  color: white !important;
+  outline: none;
+  float: left;
+  text-decoration: none;
+}
+.pagination a.active {
+   color: white !important;
+}
+
+.pagination a {
+  color: black;
+  padding: 8px 16px;
+  border: solid 2px black;
+  border-radius:5px;
+  float: left;
+  text-decoration: none;
+}
+
+.hover {
+    border: 1px solid black;
+}
+

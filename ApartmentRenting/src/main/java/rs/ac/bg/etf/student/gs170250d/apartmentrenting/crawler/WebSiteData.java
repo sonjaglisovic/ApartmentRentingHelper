@@ -7,7 +7,7 @@ import java.util.List;
 public interface WebSiteData {
 
     String urlPrefix();
-    String getUrl();
+    String getUrl(int page);
     String selectString();
     void buildApartmentToAddObject(String url, List<Apartment> apartmentsToAdd);
 }

@@ -10,17 +10,6 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 @Configuration
 public class RestTemplateConfig {
 
-    private HttpComponentsClientHttpRequestFactory getClientHttpRequestFactory() {
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory
-                = new HttpComponentsClientHttpRequestFactory();
-        //Connect timeout
-        clientHttpRequestFactory.setConnectTimeout(10_000);
-
-        //Read timeout
-        clientHttpRequestFactory.setReadTimeout(10_000);
-        return clientHttpRequestFactory;
-    }
-
     @Bean
     public RestTemplate restTemplate() {
 
@@ -31,5 +20,16 @@ public class RestTemplateConfig {
         RestTemplate restTemplate = restTemplateBuilder.build();
         restTemplate.setRequestFactory(getClientHttpRequestFactory());
         return restTemplateBuilder.build();
+    }
+
+    private HttpComponentsClientHttpRequestFactory getClientHttpRequestFactory() {
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory
+                = new HttpComponentsClientHttpRequestFactory();
+        //Connect timeout
+        clientHttpRequestFactory.setConnectTimeout(10_000);
+
+        //Read timeout
+        clientHttpRequestFactory.setReadTimeout(10_000);
+        return clientHttpRequestFactory;
     }
 }

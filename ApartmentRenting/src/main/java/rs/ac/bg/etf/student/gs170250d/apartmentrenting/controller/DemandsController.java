@@ -47,14 +47,17 @@ public class DemandsController {
             return new ResponseEntity(new UserNotFoundException("User doesn't exist", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         Demand demand = new Demand(demandRequest, user.get());
-        List<Demand> demandList = crawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
-        List<Apartment> allApartments = apartmentRepository.findAll();
+        demandService.refactorDemandRequest(demandRequest);
+        List<Demand> demandList = demandRepository.findByUser(user.get());
+        List<Apartment> allApartments = apartmentRepository.findPossiblySuitableApartments(demandRequest.getPriceMin(), demandRequest.getPriceMax(), demandRequest.getNumberOfRoomsMin(), demandRequest.getNumberOfRoomsMax(),
+                demandRequest.getMinArea(), demandRequest.getMaxArea(), demandRequest.getFloorMin(), demandRequest.getFloorMax());
         List<Apartment> suitableForDemand = allApartments.stream().filter(apartment -> crawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList());
         demand.setApartmentList(suitableForDemand);
         demandList.add(demand);
         demandRepository.save(demand);
         demandList.forEach(singleDemand -> singleDemand.setUser(null));
         demandList.forEach(singleDemand -> singleDemand.getApartmentList().forEach(apartment -> apartment.setDemandList(null)));
+        demandList = demandService.getDemandsWithReversedApartments(demandList);
         return ResponseEntity.ok(demandList);
     }
 
@@ -75,8 +78,10 @@ public class DemandsController {
         }
         Demand demand = optionalDemand.get();
         demandService.updateDemand(demand, demandRequest);
-        List<Apartment> allApartments = apartmentRepository.findAll();
-        List<Demand> demandList = crawlerService.processCrawling(demand.getUser().getEmail(), apartmentRepository, demandRepository);
+        demandService.refactorDemandRequest(demandRequest);
+        List<Apartment> allApartments = apartmentRepository.findPossiblySuitableApartments(demandRequest.getPriceMin(), demandRequest.getPriceMax(), demandRequest.getNumberOfRoomsMin(), demandRequest.getNumberOfRoomsMax(),
+                demandRequest.getMinArea(), demandRequest.getMaxArea(), demandRequest.getFloorMin(), demandRequest.getFloorMax());
+        List<Demand> demandList = demandRepository.findByUser(updatedUser.get());
         List<Apartment> suitableForDemand = allApartments.stream().filter(apartment -> crawlerService.checkIfSuitable(demand, apartment)).collect(Collectors.toList());
         demand.setApartmentList(suitableForDemand);
         demandList.stream().filter(singleDemand -> singleDemand.getDemandId().equals(demandId)).forEach(singleDemand -> singleDemand = demand);
@@ -84,6 +89,7 @@ public class DemandsController {
         demandRepository.save(demand);
         demandList.forEach(singleDemand -> singleDemand.setUser(null));
         demandList.forEach(singleDemand -> singleDemand.getApartmentList().forEach(apartment -> apartment.setDemandList(null)));
+        demandList = demandService.getDemandsWithReversedApartments(demandList);
         return ResponseEntity.ok(demandList);
     }
 
@@ -105,9 +111,14 @@ public class DemandsController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getDemandsForUser(@PathVariable String userId) {
 
-        List<Demand> demandList = crawlerService.processCrawling(userId, apartmentRepository, demandRepository);
+        Optional<UserEntity> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            return new ResponseEntity(new UserNotFoundException("Specified user doesn't exist", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+        }
+        List<Demand> demandList = demandRepository.findByUser(user.get());
         demandList.forEach(singleDemand -> singleDemand.setUser(null));
         demandList.forEach(singleDemand -> singleDemand.getApartmentList().forEach(apartment -> apartment.setDemandList(null)));
+        demandList = demandService.getDemandsWithReversedApartments(demandList);
         return ResponseEntity.ok(demandList);
     }
 

@@ -23,8 +23,6 @@ public class TomTomApiService {
 
     @Autowired
     RestTemplate restTemplate;
-    @Autowired
-    RestTemplate distanceTemplate;
 
     public final String MY_API_KEY = "B6hkAefPnSwcihAngy9SSffKppzyW5kw";
     public final String URL_GEOCODING = "https://api.tomtom.com/search/2/structuredGeocode.json";
@@ -45,6 +43,7 @@ public class TomTomApiService {
         UriComponentsBuilder builder = null;
 
         builder = UriComponentsBuilder.fromHttpUrl(URL_GEOCODING)
+                
                 .queryParam("countryCode", countryCode)
                 .queryParam("streetName", address)
                 .queryParam("municipality", city)
@@ -54,7 +53,7 @@ public class TomTomApiService {
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         try {
-            Thread.sleep(200);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

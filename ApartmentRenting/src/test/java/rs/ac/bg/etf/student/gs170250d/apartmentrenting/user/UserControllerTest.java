@@ -9,10 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.controller.UserController;
-import rs.ac.bg.etf.student.gs170250d.apartmentrenting.exception.AlreadyExistsUserWithEmail;
-import rs.ac.bg.etf.student.gs170250d.apartmentrenting.exception.IncorrectEmailFormatException;
-import rs.ac.bg.etf.student.gs170250d.apartmentrenting.exception.IncorrectPasswordFormatException;
-import rs.ac.bg.etf.student.gs170250d.apartmentrenting.exception.WrongUserNameOrPasswordException;
 import rs.ac.bg.etf.student.gs170250d.apartmentrenting.model.UserRequest;
 
 import javax.transaction.Transactional;

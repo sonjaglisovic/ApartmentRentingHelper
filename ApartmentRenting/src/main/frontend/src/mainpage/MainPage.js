@@ -141,7 +141,7 @@ const processDemand = (event) => {
         <div class="modal-dialog bg-dark" role="document">
           <div class="modal-content bg-light">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle">Add filters</h5>
+              <h5 class="modal-title" id="exampleModalLongTitle"> {updateDemand === null ? "Add filters" : "Edit filters"}</h5>
               <button type="button" class="close" onClick={resetDemandParameterToDefaultValues} data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -208,10 +208,10 @@ const processDemand = (event) => {
                         </td>
                         <td>
                             <select className="mt-3" id="heating" name="heatType" multiple onChange={changeHandler}>
-                              <option selected={heatType !== null && heatType.indexOf("centralno") >= 0 } value="centralno">Centralno</option>
-                              <option selected={heatType !== null && heatType.indexOf("etažno") >= 0 }  value="etažno">Etažno</option>
-                              <option selected={heatType !== null && heatType.indexOf("nastruju") >= 0} value="nastruju">Na struju</option>
-                              <option selected={heatType !== null && heatType.indexOf("klima") >= 0} value="klima">Klima</option>
+                              <option selected={heatType !== null && heatType != "" && heatType.indexOf("centralno") >= 0 } value="centralno">Centralno</option>
+                              <option selected={heatType !== null && heatType != "" && heatType.indexOf("etažno") >= 0 }  value="etažno">Etažno</option>
+                              <option selected={heatType !== null && heatType != "" && heatType.indexOf("nastruju") >= 0} value="nastruju">Na struju</option>
+                              <option selected={heatType !== null && heatType != "" && heatType.indexOf("klima") >= 0} value="klima">Klima</option>
                             </select>
                              <span class="focus"></span>
                         </td>

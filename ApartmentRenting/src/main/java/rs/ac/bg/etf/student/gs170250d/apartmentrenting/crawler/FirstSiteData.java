@@ -18,9 +18,9 @@ public class FirstSiteData implements WebSiteData {
     }
 
     @Override
-    public String getUrl() {
+    public String getUrl(int page) {
 
-        return "https://www.nekretnine.rs/stambeni-objekti/stanovi/izdavanje-prodaja/izdavanje/lista/po-stranici/50?gclid=CjwKCAjw9uKIBhA8EiwAYPUS3P2YTkKjJvNyjnIj1eh9vyGeIMFbyYoxDjEEZ1AB91OmaGtB5hqFHBoCov0QAvD_BwE";
+        return "https://www.nekretnine.rs/stambeni-objekti/stanovi/izdavanje-prodaja/izdavanje/lista/po-stranici/20/" + (page == 1 ? "" : ("stranica/" + page));
     }
 
     private Double getNumberOfRoomsBasedOnDescription(String description) {

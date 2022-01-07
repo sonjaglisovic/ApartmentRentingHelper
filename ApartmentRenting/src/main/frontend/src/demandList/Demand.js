@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import './DemandList.css'
 import { FiMinimize2, FiMaximize2, FiEdit3, FiTrash2 } from "react-icons/fi";
 import $ from 'jquery'
-import ApartmentList from '../apartmentList/ApartmentList'
+import ApartmentListPaginated from '../apartmentList/ApartmentListPaginated'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 
@@ -40,6 +40,9 @@ return(
        <h3> {demand.demandName} </h3>
        </div>
        <div className="row dataAlign">
+               <span> Number of found results:  {demand.apartmentList.length} </span>
+       </div>
+       <div className="row dataAlign">
         <span> Price:  {demand.priceMin !== null ? demand.priceMin : "/"  }-{demand.priceMax !== null ? demand.priceMax : "/"} &euro; </span>
         </div>
         <div className="row dataAlign">
@@ -74,11 +77,9 @@ return(
            {showDetails[index] === false ? <FiMaximize2 onClick={toggleExpand} className="icon-size" /> : <FiMinimize2 onClick={toggleExpand} className="icon-size" />}
     </div>
     </div>
-    {showDetails[index] === true && <Container>
-    <Row className="mt-3">
-        <ApartmentList apartmentList={demand.apartmentList} />
-     </Row>
-    </Container>
+    {showDetails[index] === true && <>
+        <ApartmentListPaginated apartmentList={demand.apartmentList} />
+    </>
     }
      <div class="modal fade" id={demand.demandId} tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
             <div class="modal-dialog bg-dark" role="document">
